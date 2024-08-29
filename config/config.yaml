@@ -1,0 +1,11 @@
+postgres:
+  host: localhost
+  port: 7000
+  user: postgres
+  db_name: postgres
+  ssl_mode: disable
+  time_zone: Europe/Moscow
+http_server:
+  host: localhost
+  port: 8080
+env: "local"
