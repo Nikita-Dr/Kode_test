@@ -2,8 +2,9 @@ package main
 
 import (
 	"Kode_test/config"
+	"Kode_test/internal/storage/postgres"
+	"Kode_test/pkg/logger/sl"
 	"golang.org/x/exp/slog"
-	"log"
 	"os"
 )
 
@@ -11,7 +12,7 @@ func main() {
 
 	cfg, err := config.NewConfig()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	log := slog.New(
@@ -20,10 +21,13 @@ func main() {
 	log.Info("starting_logger", slog.String("env", cfg.Env))
 	log.Debug("debug massages are enabled")
 
-	//TODO init logger
+	storage, err := postgres.New(cfg.DB)
+	if err != nil {
+		log.Error("failed to connect to database", sl.Err(err))
+		os.Exit(1)
+	}
 
-	//TODO init storage
-
+	_ = storage
 	//TODO init router
 
 	//TODO run server
