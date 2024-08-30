@@ -4,6 +4,10 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
+	github.com/ajg/form v1.5.1 // indirect
+	github.com/go-chi/chi v1.5.5 // indirect
+	github.com/go-chi/chi/v5 v5.1.0 // indirect
+	github.com/go-chi/render v1.0.3 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/gookit/goutil v0.6.15 // indirect
 	github.com/gookit/gsr v0.1.0 // indirect

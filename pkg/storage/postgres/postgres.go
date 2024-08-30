@@ -8,7 +8,7 @@ import (
 )
 
 type Storage struct {
-	db *sql.DB
+	*sql.DB
 }
 
 func New(pgCfg config.Postgres) (*Storage, error) {
@@ -19,6 +19,7 @@ func New(pgCfg config.Postgres) (*Storage, error) {
 		return nil, fmt.Errorf("postgres - New - Open: %v", err)
 	}
 
+	//TODO  это нужно отсюда убрать и вызывать отдельно
 	stmt, err := db.Prepare(`CREATE TABLE IF NOT EXISTS notes(
     id SERIAL PRIMARY KEY,
     note text NOT NULL);
@@ -32,5 +33,5 @@ func New(pgCfg config.Postgres) (*Storage, error) {
 		return nil, fmt.Errorf("postgres - New - exec: %v", err)
 	}
 
-	return &Storage{db: db}, nil
+	return &Storage{db}, nil
 }
