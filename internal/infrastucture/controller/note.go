@@ -38,5 +38,9 @@ func New(log *slog.Logger, noteUsecase NoteUsecase) http.HandlerFunc {
 
 		log.Info("request body decoded", slog.Any("requested", request.Body))
 
+		//TODO подключиться по api к яндекс спеллеру https://yandex.ru/dev/speller/doc/ru/concepts/api-overview
+		// https://dev.to/andyhaskell/build-a-web-api-client-in-go-part-1-connecting-to-the-api-5a4o
+		//TODO вызов тут функции валидации
+
 	}
 }
