@@ -8,3 +8,7 @@ type Note struct {
 func NoteFromDTO(note string) Note {
 	return Note{Note: note}
 }
+
+func (n *Note) UpdateNote(note string) {
+	n.Note = note
+}

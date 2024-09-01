@@ -3,10 +3,14 @@ package main
 import (
 	"Kode_test/config"
 	"Kode_test/internal/domain/note/usecase"
+	"Kode_test/internal/infrastucture/controller"
 	"Kode_test/internal/infrastucture/repository"
 	"Kode_test/pkg/logger/sl"
+	"Kode_test/pkg/server"
 	"Kode_test/pkg/storage/postgres"
+	"Kode_test/pkg/yadex"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/exp/slog"
 	"os"
 )
@@ -39,8 +43,10 @@ func main() {
 	//notes := []entity.Note{}
 	//notes, err = notesRepo.GetNotes()
 	//fmt.Println(notes)
+	textChecker := yadex.NewTextChecker()
+	textValidator := usecase.NewTextValidator(textChecker)
 
-	noteUC := usecase.NewNoteUseCase(notesRepo)
+	noteUC := usecase.NewNoteUseCase(notesRepo, textValidator)
 
 	//noteListDTO := []model.NoteDTO{}
 	//noteListDTO, err = noteUC.GetNotes()
@@ -50,8 +56,18 @@ func main() {
 
 	router := chi.NewRouter()
 
-	_ = noteUC
-	_ = router
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+
+	controller.NewNoteController(router, noteUC, log)
 
 	//TODO run server
+
+	log.Info("starting server", slog.String("adress", cfg.Http.Host+":"+cfg.Http.Port))
+	if err = server.NewHttpServer(cfg.Http, router).Start(); err != nil {
+		log.Error("failed to start server", sl.Err(err))
+	}
+
+	log.Error("server stopped")
 }

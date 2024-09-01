@@ -15,11 +15,11 @@ func NewNoteRepository(db *postgres.Storage) *NoteRepository {
 }
 
 func (n *NoteRepository) CreateNote(note entity.Note) error {
-	stmt, err := n.db.Prepare("INSERT INTO notes(id, note) VALUES ($1, $2)")
+	stmt, err := n.db.Prepare("INSERT INTO notes(note) VALUES ($1)")
 	if err != nil {
 		return fmt.Errorf("repository - NoteRepository - CreateNote - Prepare:%v", err)
 	}
-	_, err = stmt.Exec(note.Id, note.Note)
+	_, err = stmt.Exec(note.Note)
 	if err != nil {
 		return fmt.Errorf("repository - NoteRepository - CreateNote - Exec:%v", err)
 	}
@@ -29,7 +29,7 @@ func (n *NoteRepository) CreateNote(note entity.Note) error {
 func (n *NoteRepository) GetNotes() ([]entity.Note, error) {
 	notes := []entity.Note{}
 
-	rows, err := n.db.Query("SELECT * FROM notes")
+	rows, err := n.db.Query("SELECT id, note FROM notes")
 	if err != nil {
 		return nil, fmt.Errorf("repository - NoteRepository - GetNotes - Query:%v", err)
 	}
@@ -41,6 +41,7 @@ func (n *NoteRepository) GetNotes() ([]entity.Note, error) {
 		if err != nil {
 			return nil, fmt.Errorf("repository - NoteRepository - GetNotes - Scan:%v", err)
 		}
+		fmt.Println("row ", note)
 		notes = append(notes, note)
 	}
 	return notes, nil

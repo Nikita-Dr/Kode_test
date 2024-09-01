@@ -3,19 +3,19 @@ package model
 import "Kode_test/internal/domain/note/entity"
 
 type NoteDTO struct {
-	ID   int    `json:"id"`
+	Id   int    `json:"id"`
 	Note string `json:"note"`
 }
 
 func GetNoteDTO(note entity.Note) NoteDTO {
 	return NoteDTO{
-		ID:   note.Id,
+		Id:   note.Id,
 		Note: note.Note,
 	}
 }
 
 func GetNoteListDTO(noteList []entity.Note) []NoteDTO {
-	noteListDTO := []NoteDTO{}
+	noteListDTO := make([]NoteDTO, 0, len(noteList))
 	for _, note := range noteList {
 		noteListDTO = append(noteListDTO, GetNoteDTO(note))
 	}

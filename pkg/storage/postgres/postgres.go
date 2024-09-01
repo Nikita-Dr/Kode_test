@@ -21,8 +21,8 @@ func New(pgCfg config.Postgres) (*Storage, error) {
 
 	//TODO  это нужно отсюда убрать и вызывать отдельно
 	stmt, err := db.Prepare(`CREATE TABLE IF NOT EXISTS notes(
-    id SERIAL PRIMARY KEY,
-    note text NOT NULL);
+    	id SERIAL PRIMARY KEY NOT NULL,
+    	note TEXT NOT NULL);
 	`)
 	if err != nil {
 		return nil, fmt.Errorf("postgres - New - prepare: %v", err)
