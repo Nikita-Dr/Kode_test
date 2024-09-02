@@ -8,7 +8,7 @@ import (
 
 type NoteRepository interface {
 	CreateNote(note entity.Note) error
-	GetNotes() ([]entity.Note, error)
+	GetNotes(userId int) ([]entity.Note, error)
 }
 
 type TextValidator interface {
@@ -27,8 +27,8 @@ func NewNoteUseCase(noteRepo NoteRepository, textValidator TextValidator) *NoteU
 	}
 }
 
-func (u *NoteUseCase) CreateNote(noteDTO model.NoteDTO) error {
-	note := entity.NoteFromDTO(noteDTO.Note)
+func (u *NoteUseCase) CreateNote(noteDTO model.CreateNoteDTO) error {
+	note := entity.NoteFromDTO(noteDTO.Note, noteDTO.UserId)
 
 	verifiedText, err := u.textValidator.ValidateText(note.Note)
 	if err != nil {
@@ -36,14 +36,14 @@ func (u *NoteUseCase) CreateNote(noteDTO model.NoteDTO) error {
 	}
 	note.UpdateNote(verifiedText)
 
-	if err := u.noteRepo.CreateNote(note); err != nil {
+	if err = u.noteRepo.CreateNote(note); err != nil {
 		return fmt.Errorf("usecase - NoteUseCase - CreateNote: %w", err)
 	}
 	return nil
 }
 
-func (u *NoteUseCase) GetNotes() ([]model.NoteDTO, error) {
-	noteEntityList, err := u.noteRepo.GetNotes()
+func (u *NoteUseCase) GetNotes(userId int) ([]model.ResponseNoteDTO, error) {
+	noteEntityList, err := u.noteRepo.GetNotes(userId)
 	if err != nil {
 		return nil, fmt.Errorf("usecase - NoteUseCase - GetNotes: %w", err)
 	}

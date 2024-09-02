@@ -9,3 +9,4 @@ http_server:
   host: localhost
   port: 8080
 env: "local"
+jwt: "my_key"

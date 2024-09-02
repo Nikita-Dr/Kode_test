@@ -45,10 +45,18 @@ func (t *TextChecker) CheckText(inputText string) ([]string, error) {
 	err = json.Unmarshal(data, &checkerWords)
 
 	var verifiedWords []string
-	for _, w := range checkerWords {
-		verifiedWords = append(verifiedWords, w.S[0])
+	if len(checkerWords) > 0 {
+		for _, w := range checkerWords {
+			fmt.Println(w)
+			if w.S[0] == "" {
+				verifiedWords = append(verifiedWords, w.Word)
+			} else {
+				verifiedWords = append(verifiedWords, w.S[0])
+			}
+		}
+		return verifiedWords, err
 	}
-
+	verifiedWords = append(verifiedWords, inputText)
 	return verifiedWords, err
 }
 

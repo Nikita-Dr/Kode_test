@@ -11,8 +11,8 @@ import (
 )
 
 type NoteUsecase interface {
-	CreateNote(noteDto model.NoteDTO) error
-	GetNotes() ([]model.NoteDTO, error)
+	CreateNote(noteDto model.CreateNoteDTO) error
+	GetNotes(userId int) ([]model.ResponseNoteDTO, error)
 }
 
 type NoteController struct {
@@ -23,14 +23,13 @@ type NoteController struct {
 func NewNoteController(handler *chi.Mux, noteUsecase NoteUsecase, log *slog.Logger) {
 	controller := &NoteController{noteUsecase: noteUsecase, log: log}
 
-	handler.Get("/note", controller.getNotes)
-	handler.Post("/note", controller.createNote)
+	handler.Get("/notes", controller.getNotes)
+	handler.Post("/notes", controller.createNote)
 }
 
 func (c *NoteController) getNotes(w http.ResponseWriter, r *http.Request) {
-	var notes []model.NoteDTO
-	var err error
-	if notes, err = c.noteUsecase.GetNotes(); err != nil {
+	notes, err := c.noteUsecase.GetNotes(r.Context().Value("userID").(int))
+	if err != nil {
 		c.log.Error("failed to get notes", sl.Err(err))
 		render.JSON(w, r, response.Error("failed to get notes"))
 		return
@@ -39,9 +38,10 @@ func (c *NoteController) getNotes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *NoteController) createNote(w http.ResponseWriter, r *http.Request) {
-	var noteDto model.NoteDTO
+	var noteDto model.CreateNoteDTO
 
 	err := render.DecodeJSON(r.Body, &noteDto)
+	noteDto.UserId = r.Context().Value("userID").(int)
 
 	if err != nil {
 		c.log.Error("failed to decode request body", sl.Err(err))
@@ -49,7 +49,7 @@ func (c *NoteController) createNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.log.Info("request body decoded", slog.Any("requested", r.Body))
+	//c.log.Info("request body decoded", slog.Any("requested", r.Body))
 
 	if err = c.noteUsecase.CreateNote(noteDto); err != nil {
 		c.log.Error("failed to create note", sl.Err(err))
@@ -67,7 +67,7 @@ func (c *NoteController) createNote(w http.ResponseWriter, r *http.Request) {
 //			slog.String("cp", op),
 //		)
 //
-//		var noteDto model.NoteDTO
+//		var noteDto model.CreateNoteDTO
 //
 //		err := render.DecodeJSON(request.Body, &noteDto)
 //		if err != nil {

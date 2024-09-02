@@ -2,9 +2,12 @@ package main
 
 import (
 	"Kode_test/config"
+	usecase2 "Kode_test/internal/domain/auth/usecase"
 	"Kode_test/internal/domain/note/usecase"
 	"Kode_test/internal/infrastucture/controller"
+	middleware2 "Kode_test/internal/infrastucture/controller/middleware"
 	"Kode_test/internal/infrastucture/repository"
+	"Kode_test/pkg/jwt_auth"
 	"Kode_test/pkg/logger/sl"
 	"Kode_test/pkg/server"
 	"Kode_test/pkg/storage/postgres"
@@ -32,8 +35,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Инициализация слоя репозитория
 	notesRepo := repository.NewNoteRepository(storage)
-	_ = notesRepo
+	userRepo := repository.NewUserRepository(storage)
 
 	//err = notesRepo.CreateNote(entity.Note{Id: 2, Note: "note 2"})
 	//if err != nil {
@@ -43,16 +47,15 @@ func main() {
 	//notes := []entity.Note{}
 	//notes, err = notesRepo.GetNotes()
 	//fmt.Println(notes)
+
+	//Инициализация пакетов
 	textChecker := yadex.NewTextChecker()
+	jwtAuth := jwt_auth.NewJwtAuth(cfg.Jwt)
+
+	// Инициализация слоя usecase
 	textValidator := usecase.NewTextValidator(textChecker)
-
+	userUC := usecase2.NewAuthUseCase(userRepo, jwtAuth)
 	noteUC := usecase.NewNoteUseCase(notesRepo, textValidator)
-
-	//noteListDTO := []model.NoteDTO{}
-	//noteListDTO, err = noteUC.GetNotes()
-	//fmt.Println(noteListDTO)
-
-	//TODO init router
 
 	router := chi.NewRouter()
 
@@ -60,7 +63,11 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
+	router.Use(middleware2.ParseToken(jwtAuth))
+
+	// Инициализация слоя Controller
 	controller.NewNoteController(router, noteUC, log)
+	controller.NewAuthController(router, userUC, log)
 
 	//TODO run server
 

@@ -9,6 +9,7 @@ type Config struct {
 	DB   Postgres `yaml:"postgres"`
 	Http HTTP     `yaml:"http_server"`
 	Env  string   `yaml:"env"`
+	Jwt  string   `yaml:"jwt"`
 }
 type HTTP struct {
 	Host string `yaml:"host"`
