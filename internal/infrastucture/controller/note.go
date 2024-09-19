@@ -59,28 +59,3 @@ func (c *NoteController) createNote(w http.ResponseWriter, r *http.Request) {
 
 	render.JSON(w, r, response.OK())
 }
-
-//func New(log *slog.Logger, noteUsecase NoteUsecase) http.HandlerFunc {
-//	return func(writer http.ResponseWriter, request *http.Request) {
-//		const op = "controller - NoteController - New"
-//		log = log.With(
-//			slog.String("cp", op),
-//		)
-//
-//		var noteDto model.CreateNoteDTO
-//
-//		err := render.DecodeJSON(request.Body, &noteDto)
-//		if err != nil {
-//			log.Error("failed to decode request body", sl.Err(err))
-//
-//			render.JSON(writer, request, response.Error("failed to decode request body"))
-//
-//			return
-//		}
-//
-//		log.Info("request body decoded", slog.Any("requested", request.Body))
-//
-//
-//		err = noteUsecase.CreateNote(noteDto)
-//	}
-//}

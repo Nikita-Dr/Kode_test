@@ -2,6 +2,7 @@ package server
 
 import (
 	"Kode_test/config"
+	"context"
 	"net/http"
 	"time"
 )
@@ -24,4 +25,12 @@ func NewHttpServer(httpCfg config.HTTP, handler http.Handler) *Server {
 
 func (s *Server) Start() error {
 	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Stop(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
+}
+
+func (s *Server) GetAddr() string {
+	return s.httpServer.Addr
 }
