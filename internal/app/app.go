@@ -40,11 +40,11 @@ func NewApp(cfg *config.Config) App {
 
 	router := chi.NewRouter()
 
-	server := server.NewHttpServer(cfg.Http, router)
+	srv := server.NewHttpServer(cfg.Http, router)
 
 	return App{
 		db:          storage,
-		http_server: server,
+		http_server: srv,
 		handler:     router,
 		jwtKey:      cfg.Jwt,
 		log:         log,
@@ -84,6 +84,8 @@ func (app *App) Run() error {
 }
 
 func (app *App) Shutdown(ctx context.Context) error {
-	app.http_server.Stop(ctx)
+	if err := app.http_server.Stop(ctx); err != nil {
+		return err
+	}
 	return nil
 }
